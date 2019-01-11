@@ -21,7 +21,6 @@ after_success:
 jobs:
   include:
     - python: 3.6
-      dist: xenial
     - stage: lint
       python: 3.6
       script:

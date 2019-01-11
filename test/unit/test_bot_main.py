@@ -2,9 +2,7 @@
 
 import argparse
 
-import pytest
-
-from undiscord.__main__ import get_parser, main
+from undiscord.bot.__main__ import get_parser, main
 
 
 def test_get_parser():

@@ -80,14 +80,18 @@ setup(
     },
     install_requires=[
         "discord.py",
+        "django",
     ],
     tests_require=[
         "pytest",
         "pytest-cov",
-        "pylint"
+        "pylint",
     ],
     entry_points={
-        "console_scripts": ["undiscord = undiscord.__main__:main"],
+        "console_scripts": [
+            "undiscord-bot = undiscord.bot.__main__:main",
+            "undiscord-server = undiscord.server.__main__:main",
+        ],
     },
     cmdclass={"test": PyTest, "lint": Pylint},
 )
