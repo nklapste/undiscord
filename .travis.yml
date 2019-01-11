@@ -1,0 +1,32 @@
+language: python
+sudo: required
+
+stages:
+  - lint
+  - test
+  - build
+
+before_install:
+  - pip install codecov
+
+install:
+  - pip install .["docs","tests"]
+
+script:
+  - python setup.py test
+
+after_success:
+  - codecov
+
+jobs:
+  include:
+    - python: 3.6
+      dist: xenial
+    - stage: lint
+      python: 3.6
+      script:
+        - python setup.py lint || exit $(($? & 35))
+    - stage: build
+      python: 3.6
+      script:
+        - python setup.py sdist
