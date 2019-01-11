@@ -10,7 +10,7 @@ before_install:
   - pip install codecov
 
 install:
-  - pip install .["docs","tests"]
+  - pip install .
 
 script:
   - python setup.py test
