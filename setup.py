@@ -61,9 +61,9 @@ def readme():
 setup(
     name="undiscord",
     version=VERSION,
-    description="A Discord Bot for 2019 hackathon",
+    description="A Discord Bot for Levelup 2019 hackathon",
     long_description=readme(),
-    author="Nathan Klapstein",
+    author="Nathan Klapstein, Ryan Furrer",
     author_email="nklapste@ualberta.ca",
     url="https://github.com/nklapste/undiscord",
     license="MIT",
@@ -81,6 +81,8 @@ setup(
     install_requires=[
         "discord.py",
         "django",
+        "plotly",
+        "networkx",
     ],
     tests_require=[
         "pytest",
