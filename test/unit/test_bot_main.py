@@ -2,6 +2,8 @@
 
 import argparse
 
+import pytest
+
 from undiscord.bot.__main__ import get_parser, main
 
 
@@ -10,4 +12,5 @@ def test_get_parser():
 
 
 def test_smoke_main():
-    assert main([]) == 0
+    with pytest.raises(SystemExit):
+        main([])
