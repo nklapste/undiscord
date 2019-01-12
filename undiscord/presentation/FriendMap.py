@@ -1,11 +1,15 @@
+# -*- coding: utf-8 -*-
+
+"""Generate a network graph from connection data"""
+
+from json import load
+
+import matplotlib.pyplot as plt
+import networkx as nx
 import plotly
 import plotly.graph_objs as go
 
-import networkx as nx
-from json import load
-import matplotlib.pyplot as plt
-
-from undiscord.reply_pry import get_possible_connections_from_server
+from undiscord.reply_pry import get_connections_from_server
 
 
 def spectral_layout(G):
@@ -29,30 +33,14 @@ class FriendMap:
     def __init__(self, server_data: dict):
         self.graph = nx.DiGraph()
         self.graph_title = server_data['name'] + " Network graph"
-
-        for channel in server_data["channels"]:
-            for message in channel['messages']:
-                self.add_connections_from_mentions(message)
         self.add_reply_connections(server_data)
 
     def add_reply_connections(self, data):
-        for message, reply in get_possible_connections_from_server(data):
-            if self.graph.has_edge(message["author"]["name"], reply["author"]["name"]):
-                self.graph[message["author"]["name"]][reply["author"]["name"]]['weight'] += 1
+        for orig_author, reply_author in get_connections_from_server(data):
+            if self.graph.has_edge(orig_author, reply_author):
+                self.graph[orig_author][reply_author]['weight'] += 1
             else:
-                self.graph.add_edge(message["author"]["name"], reply["author"]["name"], weight=1)
-
-    def add_connections_from_mentions(self, message: dict):
-        author = message['author']['name']
-        if not message['mentions']:
-            self.graph.add_node(author)
-
-        for mention in message['mentions']:
-            if self.graph.has_edge(author, mention['name']):
-                self.graph[author][mention['name']]['weight'] += 1
-            else:
-                self.graph.add_edge(author, mention['name'], weight=1)
-        pass
+                self.graph.add_edge(orig_author, reply_author, weight=1)
 
     def plot(self, filename: str):
         nx.spring_layout(self.graph)
@@ -98,7 +86,9 @@ class PlotlyAdapter:
                     xanchor='left',
                     titleside='right'
                 ),
-                line=dict(width=2)))
+                line=dict(width=2)
+            )
+        )
 
         positions = layouts[layout](map.get_graph())
         self.set_nodes(map.get_graph(), positions)
@@ -130,15 +120,18 @@ class PlotlyAdapter:
             self.node_trace['text'] += tuple([node_info])
 
     def plot_graph(self, filename: str):
-        fig = go.Figure(data=[self.edge_trace, self.node_trace],
-                        layout=go.Layout(
-                            title=self.title,
-                            titlefont=dict(size=16),
-                            showlegend=False,
-                            hovermode='closest',
-                            margin=dict(b=20, l=5, r=5, t=40),
-                            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-                            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)))
+        fig = go.Figure(
+            data=[self.edge_trace, self.node_trace],
+            layout=go.Layout(
+                title=self.title,
+                titlefont=dict(size=16),
+                showlegend=False,
+                hovermode='closest',
+                margin=dict(b=20, l=5, r=5, t=40),
+                xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
+            )
+        )
         plotly.offline.plot(fig, filename=filename, auto_open=False)
         pass
 
