@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import plotly
 import plotly.graph_objs as go
+from plotly.offline.offline import _plot_html
 
 from undiscord.reply_pry import get_connections_from_server
 
@@ -126,7 +127,15 @@ class PlotlyAdapter:
             self.node_trace['text'] += tuple([node_info])
 
     def plot_graph(self, filename: str):
-        fig = go.Figure(
+        plotly.offline.plot(self.get_figure(), filename=filename, auto_open=False)
+        pass
+
+    def get_html(self):
+        return "<html><head>  <script src='https://cdn.plot.ly/plotly-latest.min.js'></script></head><body>" \
+               + plotly.offline.plot(self.get_figure(), include_plotlyjs=False, output_type='div') + "</body></html>"
+
+    def get_figure(self):
+        return go.Figure(
             data=[*self.edge_trace, self.node_trace],
             layout=go.Layout(
                 title=self.title,
@@ -138,8 +147,6 @@ class PlotlyAdapter:
                 yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
             )
         )
-        plotly.offline.plot(fig, filename=filename, auto_open=False)
-        pass
 
     @staticmethod
     def get_line_color(weight: int) -> str:
@@ -164,3 +171,4 @@ if __name__ == "__main__":
         friend_map = FriendMap(load(data))
     html_graph = PlotlyAdapter(friend_map, "reingold")
     html_graph.plot_graph("reingold.html")
+    print(html_graph.get_html())
