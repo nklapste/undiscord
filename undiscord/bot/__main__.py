@@ -16,7 +16,8 @@ __log__ = getLogger(__name__)
 def get_parser() -> argparse.ArgumentParser:
     """Create and return the argparser for undiscord discord bot"""
     parser = argparse.ArgumentParser(
-        description="Start undiscord discord bot"
+        description="Start undiscord discord bot",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
     parser.add_argument("-tf", "--token-file", type=str, dest="token_file",

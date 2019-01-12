@@ -80,15 +80,16 @@ setup(
     },
     install_requires=[
         "discord.py",
-        "django",
-        "networkx",
-        "matplotlib",
-        "numpy",
+        "cheroot>=6.5.4,<7.0.0",
+        "flask>=1.0.2,<2.0.0",
+        "networkx>=2.2",
+        "matplotlib>=3.0.2,<4.0.0",
+        "numpy>=1.15.4,<2.0.0",
     ],
     tests_require=[
-        "pytest",
-        "pytest-cov",
-        "pylint",
+        "pytest>=4.1.0,<5.0.0",
+        "pytest-cov>=2.6.1,<3.0.0",
+        "pylint>=2.2.2,<3.0.0",
     ],
     entry_points={
         "console_scripts": [

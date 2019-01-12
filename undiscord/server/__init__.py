@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 
-"""API server for accessing undiscord data"""
+"""API flask/cheroot server for accessing undiscord data"""

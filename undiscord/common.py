@@ -24,7 +24,7 @@ def log_level(log_level_string: str):
 
 
 def add_log_parser(parser):
-    """Add logging options to the arguement parser"""
+    """Add logging options to the argument parser"""
     group = parser.add_argument_group(title="Logging")
     group.add_argument("--log-level", dest="log_level", default="INFO",
                        type=log_level, help="Set the logging output level")
