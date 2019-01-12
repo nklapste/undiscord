@@ -81,8 +81,9 @@ setup(
     install_requires=[
         "discord.py",
         "django",
-        "plotly",
         "networkx",
+        "matplotlib",
+        "numpy",
     ],
     tests_require=[
         "pytest",
