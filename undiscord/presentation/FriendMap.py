@@ -68,12 +68,7 @@ class PlotlyAdapter:
 
     def __init__(self, map: FriendMap, layout: str):
         self.title = map.get_title()
-        self.edge_trace = go.Scatter(
-            x=[],
-            y=[],
-            line=dict(width=0.5, color='#888'),
-            hoverinfo='none',
-            mode='lines')
+        self.edge_trace = []
         self.node_trace = go.Scatter(
             x=[],
             y=[],
@@ -82,7 +77,7 @@ class PlotlyAdapter:
             hoverinfo='text',
             marker=dict(
                 showscale=True,
-                colorscale='YlGnBu',
+                colorscale='Rainbow',
                 reversescale=True,
                 color=[],
                 size=10,
@@ -111,8 +106,13 @@ class PlotlyAdapter:
         for edge in graph.edges():
             x0, y0 = positions[edge[0]]
             x1, y1 = positions[edge[1]]
-            self.edge_trace['x'] += tuple([x0, x1, None])
-            self.edge_trace['y'] += tuple([y0, y1, None])
+            edge_trace = go.Scatter(
+                x=[x0, x1, None],
+                y=[y0, y1, None],
+                line=dict(width=2, color=self.get_line_color(graph[edge[0]][edge[1]]['weight'])),
+                hoverinfo='none',
+                mode='lines')
+            self.edge_trace.append(edge_trace)
 
     def set_node_attributes(self, graph: nx.Graph):
         for node, adjacencies in enumerate(graph.adjacency()):
@@ -127,7 +127,7 @@ class PlotlyAdapter:
 
     def plot_graph(self, filename: str):
         fig = go.Figure(
-            data=[self.edge_trace, self.node_trace],
+            data=[*self.edge_trace, self.node_trace],
             layout=go.Layout(
                 title=self.title,
                 titlefont=dict(size=16),
@@ -140,6 +140,23 @@ class PlotlyAdapter:
         )
         plotly.offline.plot(fig, filename=filename, auto_open=False)
         pass
+
+    @staticmethod
+    def get_line_color(weight: int) -> str:
+        if weight == 1:
+            return '#ff0000'
+        elif weight == 2:
+            return '#ffbf00'
+        elif weight <= 5:
+            return '#80ff00'
+        elif weight < 10:
+            return '#00ff40'
+        elif weight < 20:
+            return '#00ffff'
+        elif weight < 25:
+            return '#0040ff'
+        else:
+            return '#8000ff'
 
 
 if __name__ == "__main__":
