@@ -33,9 +33,10 @@ class FriendMap:
     def __init__(self, server_data: dict):
         self.graph = nx.DiGraph()
         self.graph_title = server_data['name'] + " Network graph"
-        self.add_reply_connections(server_data)
+        self.add_nodes(server_data)
+        self.add_connections(server_data)
 
-    def add_reply_connections(self, data):
+    def add_connections(self, data):
         for orig_author, reply_author in get_connections_from_server(data):
             if self.graph.has_edge(orig_author, reply_author):
                 self.graph[orig_author][reply_author]['weight'] += 1
@@ -55,6 +56,11 @@ class FriendMap:
 
     def get_graph(self):
         return self.graph
+
+    def add_nodes(self, server_data):
+        for channel in server_data["channels"]:
+            for message in channel["messages"]:
+                self.graph.add_node(message["author"]["name"])
 
 
 class PlotlyAdapter:
