@@ -12,21 +12,31 @@ __log__ = getLogger(__name__)
 
 REPLY_TIME = 20
 
+Channel = Dict[str, Any]
 Message = Dict[str, Any]
 
 
-def get_possible_connections_from_server(server_data: Message):
+def get_connections_from_server(server_data: Message):
     for channel in server_data["channels"]:
         yield from get_possible_connections_from_channel(channel)
+        yield from get_at_connections(channel)
 
 
-def get_possible_connections_from_channel(channel: Message):
+def get_at_connections(channel: Channel):
+    for message in channel["messages"]:
+        if not message['mentions']:
+            continue
+        for mention in message['mentions']:
+            yield message["author"]["name"], mention['name']
+
+
+def get_possible_connections_from_channel(channel: Channel):
     channel_messages = channel["messages"]
     for i in range(len(channel_messages)):
         message = channel_messages[i]
         next_messages = channel_messages[i + 1:]
         for reply_message in get_message_replies(message, next_messages):
-            yield message, reply_message
+            yield message["author"]["name"], reply_message["author"]["name"]
 
 
 def get_message_replies(message, next_messages: List[Message]) -> Generator[

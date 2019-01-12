@@ -82,6 +82,7 @@ setup(
         "discord.py",
         "plotly",
         "pendulum",
+        "flask-restplus",
         "cheroot>=6.5.4,<7.0.0",
         "flask>=1.0.2,<2.0.0",
         "networkx>=2.2",

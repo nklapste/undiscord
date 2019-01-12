@@ -3,7 +3,7 @@
 
 from json import loads
 
-from undiscord.reply_pry import get_possible_connections_from_server
+from undiscord.reply_pry import get_connections_from_server
 
 MOCK_SERVER_DATA = loads("""
 {
@@ -165,12 +165,11 @@ MOCK_SERVER_DATA = loads("""
 
 
 def test_get_possible_connections_from_server():
-    connection_tuples = get_possible_connections_from_server(MOCK_SERVER_DATA)
-    assert [(a["author"]["name"], b["author"]["name"]) for a, b in
-            connection_tuples] == [
-               ('user 1', 'user 2'),
-               ('user 2', 'user 1'),
-               ('user 2', 'user 1'),
-               ('user 2', 'user 1'),
-               ('user 1', 'user 2')
-           ]
+    connection_tuples = list(get_connections_from_server(MOCK_SERVER_DATA))
+    assert connection_tuples == [
+        ('user 1', 'user 2'),
+        ('user 2', 'user 1'),
+        ('user 2', 'user 1'),
+        ('user 2', 'user 1'),
+        ('user 1', 'user 2')
+    ]
