@@ -107,3 +107,4 @@ venv.bak/
 
 # project specific
 token.txt
+graph/
