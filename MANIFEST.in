@@ -1,0 +1,6 @@
+include LICENSE
+include README.rst
+include undiscord/server/static/css/*
+include undiscord/server/static/images/*
+include undiscord/server/static/js/*
+include undiscord/server/templates/*

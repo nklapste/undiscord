@@ -75,9 +75,6 @@ setup(
     ],
     packages=find_packages(exclude=["test"]),
     include_package_data=True,
-    package_data={
-        "": ["README.rst"],
-    },
     install_requires=[
         "discord.py",
         "plotly>=3.5.0,<4.0.0",
