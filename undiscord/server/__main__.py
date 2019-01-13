@@ -48,8 +48,9 @@ def main(argv=sys.argv[1:]) -> int:
 
     __log__.info("starting server: host: {} port: {} graph_dir: {}".format(args.host, args.port, graph_dir))
 
+    undiscord.server.server.GRAPH_DIR = graph_dir
+
     if args.debug:
-        undiscord.server.server.GRAPH_DIR = graph_dir
         undiscord.server.server.APP.run(
             host=args.host,
             port=args.port,
