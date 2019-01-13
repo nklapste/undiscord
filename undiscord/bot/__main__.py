@@ -15,22 +15,29 @@ from undiscord.common import add_log_parser, init_logging
 
 __log__ = getLogger(__name__)
 
+DEFAULT_MESSAGES_NUMBER: int = 30
+DEFAULT_TIMEOUT: float = 30.0
+
 
 def get_parser() -> argparse.ArgumentParser:
     """Create and return the argparser for undiscord discord bot"""
     parser = argparse.ArgumentParser(
-        description="Start undiscord discord bot",
+        description="Start the UnDiscord Discord bot",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
     parser.add_argument("-s", "--server-name", type=str, required=True,
                         dest="server_name",
-                        help="The discord server to collect messages from")
-    parser.add_argument("-n", "--message-number", type=int, default=10,
+                        help="Name of the Discord server to collect "
+                             "messages from")
+    parser.add_argument("-n", "--message-number", type=int,
+                        default=DEFAULT_MESSAGES_NUMBER,
                         dest="message_number",
-                        help="Number of messages to collect")
-    parser.add_argument("-t", "--timeout", type=float, default=30.0,
-                        help="time to collect messages before stopping")
+                        help="Number of Discord messages to collect")
+    parser.add_argument("-t", "--timeout", type=float,
+                        default=DEFAULT_TIMEOUT,
+                        help="Time to collect Discord messages before "
+                             "stopping")
     parser.add_argument("-tf", "--token-file", type=str, dest="token_file",
                         required=True,
                         help="Path to file containing the Discord token for "
@@ -53,8 +60,10 @@ def main(argv=sys.argv[1:]) -> int:
     return 0
 
 
-def scrape_server(token: str, server_name: str, messages_number: int = 10,
-                  timeout: float = 30.0):
+def scrape_server(token: str,
+                  server_name: str,
+                  messages_number: int = DEFAULT_MESSAGES_NUMBER,
+                  timeout: float = DEFAULT_TIMEOUT):
     loop = asyncio.new_event_loop()
     client = Client(is_bot=False, loop=loop, max_messages=messages_number)
     server_data = {}
