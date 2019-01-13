@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""argparse and entry point script for undiscord discord bot"""
+"""argparse and entry point script for undiscord Discord bot"""
 
 import argparse
 import asyncio
@@ -20,7 +20,7 @@ DEFAULT_TIMEOUT: float = 30.0
 
 
 def get_parser() -> argparse.ArgumentParser:
-    """Create and return the argparser for undiscord discord bot"""
+    """Create and return the argparser for undiscord Discord bot"""
     parser = argparse.ArgumentParser(
         description="Start the UnDiscord Discord bot",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -49,7 +49,7 @@ def get_parser() -> argparse.ArgumentParser:
 
 
 def main(argv=sys.argv[1:]) -> int:
-    """main entry point undiscord discord bot"""
+    """main entry point undiscord Discord bot"""
     parser = get_parser()
 
     args = parser.parse_args(argv)

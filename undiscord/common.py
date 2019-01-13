@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""common functionality between the bot and server"""
+"""Common functionality between the Discord bot and server"""
 
 import argparse
 import logging

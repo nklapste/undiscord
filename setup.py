@@ -61,7 +61,7 @@ def readme():
 setup(
     name="undiscord",
     version=VERSION,
-    description="A Discord Bot for Levelup 2019 hackathon",
+    description="A Discord Bot for 2019 Level Up Hackathon",
     long_description=readme(),
     author="Nathan Klapstein, Ryan Furrer",
     author_email="nklapste@ualberta.ca",

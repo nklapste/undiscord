@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# TODO: doc
 """undiscord
 
-A Discord bot and Flask/cheroot server for the 2019 Hackathon.
+A Discord bot and server for the 2019 Level Up Hackathon.
 """
 
 __version__ = (0, 0, 0)
