@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""determine whether a consequtive discord message is a reply to the message
+"""Determine whether a consecutive discord message is a reply to the message
 before it"""
 
 from logging import getLogger

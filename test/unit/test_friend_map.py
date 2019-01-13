@@ -1,6 +1,6 @@
 from json import loads
 
-from undiscord.presentation.FriendMap import FriendMap, PlotlyAdapter
+from undiscord.friend_map import FriendMap
 
 MOCK_SERVER_DATA = loads("""
 {

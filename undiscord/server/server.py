@@ -7,11 +7,11 @@ from logging import getLogger
 from uuid import uuid4
 
 from flask import Flask, render_template, send_from_directory
-from flask_restplus import Resource, Api, reqparse
+from flask_restplus import Resource, Api, reqparse, fields
 
 from undiscord.bot.__main__ import scrape_server, DEFAULT_MESSAGES_NUMBER, \
     DEFAULT_TIMEOUT
-from undiscord.presentation.FriendMap import FriendMap, PlotlyAdapter
+from undiscord.friend_map import FriendMap, PlotlyAdapter
 from undiscord.reply_pry import get_connections_from_server
 
 __log__ = getLogger(__name__)
@@ -40,19 +40,36 @@ API = Api(
     description='A simple API to obtain discord member correlation data'
 )
 
-
 connections_parser = reqparse.RequestParser()
-connections_parser.add_argument('token', type=str, help='user discord token')
+connections_parser.add_argument('token', type=str, help='User Discord token')
+connections_parser.add_argument('server_name', type=str,
+                                help="Name of the Discord server to collect "
+                                     "messages from")
 connections_parser.add_argument('messages_number', type=int,
-                                default=DEFAULT_MESSAGES_NUMBER)
+                                default=DEFAULT_MESSAGES_NUMBER,
+                                help="Number of Discord messages to collect")
 connections_parser.add_argument('timeout', type=float,
-                                default=DEFAULT_TIMEOUT)
-connections_parser.add_argument('server_name', type=str)
+                                default=DEFAULT_TIMEOUT,
+                                help="Time to collect Discord messages before "
+                                     "stopping")
+
+connections_model = API.schema_model('Connections', {
+    "type": "array",
+    "items": {
+        "type": "array",
+        "minItems": 2,
+        "maxItems": 2,
+        "items": {
+            "type": "string"
+        }
+    }
+})
 
 
 @API.route('/api/connections')
 @API.expect(connections_parser)
 class GetConnections(Resource):
+    @API.marshal_with(connections_model, code=201, description='Object created')
     def post(self):
         args = connections_parser.parse_args()
         server_data = scrape_server(
@@ -62,12 +79,16 @@ class GetConnections(Resource):
             timeout=args["timeout"]
         )
         connections = list(get_connections_from_server(server_data))
-        return connections, 200
+        return connections, 201
+
+
+graph_url_model = API.model('graphURL', {"graphURL": fields.String})
 
 
 @API.route('/api/graph')
 @API.expect(connections_parser)
 class GetConnectionsGraph(Resource):
+    @API.marshal_with(graph_url_model, code=201, description='Object created')
     def post(self):
         args = connections_parser.parse_args()
         server_data = scrape_server(

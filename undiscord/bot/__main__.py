@@ -71,22 +71,24 @@ def scrape_server(token: str,
     @client.event
     async def on_ready():
         __log__.info("logged in as: {}".format(client.user.id))
+
         for server in client.servers:
             if server.name != server_name:
                 continue
             server: Server = server
-            __log__.info(
-                "scraping server: name: {} id: {}".format(server.name,
-                                                          server.id))
-            server_data.update({
-                "name": server.name,
-                "id": server.id,
-                "channels": []
-            })
-            # get channel
+            __log__.info("obtained server: name: {} id: {}".format(
+                server.name, server.id))
+            server_data.update(
+                {
+                    "name": server.name,
+                    "id": server.id,
+                    "channels": []
+                }
+            )
+
             for channel in server.channels:
                 channel: Channel = channel
-                __log__.info("scraping channel: name: {} id: {}".format(
+                __log__.info("obtained channel: name: {} id: {}".format(
                     channel.name, channel.id))
                 channel_data = {
                     "name": channel.name,
@@ -112,8 +114,10 @@ def scrape_server(token: str,
                             "timestamp": str(message.timestamp),
                             "content": message.content,
                             "mentions": [
-                                dict(name=mentioned_member.name,
-                                     id=mentioned_member.id)
+                                dict(
+                                    name=mentioned_member.name,
+                                    id=mentioned_member.id
+                                )
                                 for mentioned_member in message.mentions
                             ]
                         }
@@ -124,7 +128,7 @@ def scrape_server(token: str,
                     pass
                 except NotFound:  # cant find channel
                     pass
-                except HTTPException:
+                except HTTPException:  # discord likely down
                     pass
                 __log__.debug("parsed channel: {}".format(channel_data))
                 server_data["channels"].append(channel_data)

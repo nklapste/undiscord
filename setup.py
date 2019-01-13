@@ -80,9 +80,9 @@ setup(
     },
     install_requires=[
         "discord.py",
-        "plotly",
-        "pendulum",
-        "flask-restplus",
+        "plotly>=3.5.0,<4.0.0",
+        "pendulum>=2.0.4,<3.0.0",
+        "flask-restplus>=0.12.1,<1.0.0",
         "cheroot>=6.5.4,<7.0.0",
         "flask>=1.0.2,<2.0.0",
         "networkx>=2.2",

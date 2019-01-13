@@ -2,19 +2,15 @@
 
 """Generate a network graph from connection data"""
 
-from json import load
+from datetime import datetime
+from typing import Any, Dict
 
 import matplotlib.pyplot as plt
 import networkx as nx
 import plotly
 import plotly.graph_objs as go
-from plotly.offline.offline import _plot_html
 
 from undiscord.reply_pry import get_connections_from_server
-
-
-def spectral_layout(G):
-    return nx.spectral_layout(G, scale=0.01)
 
 
 def reingold(G):
@@ -23,22 +19,25 @@ def reingold(G):
 
 layouts: dict = {
     "reingold": reingold,
-    "spectral": spectral_layout,  # TODO: not working
     "random": nx.random_layout
 }
 
 
 class FriendMap:
-    """Takes a json file from ___and created a directed graph"""
+    """Factory for creating directed network graphs representing conversations
+    between Discord server members"""
 
     def __init__(self, server_data: dict):
         self.graph = nx.DiGraph()
-        self.graph_title = server_data['name'] + " Network graph"
+        self.graph_title = "{} {} Network graph".format(
+            datetime.utcnow().strftime("%Y-%m-%d"),
+            server_data['name']
+        )
         self.add_nodes(server_data)
         self.add_connections(server_data)
 
-    def add_connections(self, data):
-        for orig_author, reply_author in get_connections_from_server(data):
+    def add_connections(self, server_data: Dict[str, Any]):
+        for orig_author, reply_author in get_connections_from_server(server_data):
             if self.graph.has_edge(orig_author, reply_author):
                 self.graph[orig_author][reply_author]['weight'] += 1
             else:
@@ -65,10 +64,10 @@ class FriendMap:
 
 
 class PlotlyAdapter:
-    """Takes a FriendMap and creates a plotly map from it"""
+    """Adapter to convert a FriendMap into a plotly map"""
 
-    def __init__(self, map: FriendMap, layout: str):
-        self.title = map.get_title()
+    def __init__(self, friend_map: FriendMap, layout: str):
+        self.title = friend_map.get_title()
         self.edge_trace = []
         self.node_trace = go.Scatter(
             x=[],
@@ -92,10 +91,10 @@ class PlotlyAdapter:
             )
         )
 
-        positions = layouts[layout](map.get_graph())
-        self.set_nodes(map.get_graph(), positions)
-        self.set_edges(map.get_graph(), positions)
-        self.set_node_attributes(map.get_graph())
+        positions = layouts[layout](friend_map.get_graph())
+        self.set_nodes(friend_map.get_graph(), positions)
+        self.set_edges(friend_map.get_graph(), positions)
+        self.set_node_attributes(friend_map.get_graph())
 
     def set_nodes(self, graph: nx.Graph, positions):
         for node in graph.nodes():
@@ -164,11 +163,3 @@ class PlotlyAdapter:
             return '#0040ff'
         else:
             return '#8000ff'
-
-
-if __name__ == "__main__":
-    with open("discord-ding-ding_messages.json") as data:
-        friend_map = FriendMap(load(data))
-    html_graph = PlotlyAdapter(friend_map, "reingold")
-    html_graph.plot_graph("reingold.html")
-    print(html_graph.get_html())
