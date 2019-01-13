@@ -1,5 +1,11 @@
+@font-face {
+    font-family: 'logo-font';
+    src: url('uni-sans.heavy-caps.otf');
+}
+
 .project-name {
     color: #FFFFFF;
+    font-family: logo-font, Whitney, Helvetica Neue, Helvetica, Arial, sans-serif;
     font-weight: bold;
     font-size: 16ex;
     horiz-align: center;
@@ -9,8 +15,8 @@
 
 .slogan {
     color: #FFFFFF;
+    font-family: Whitney, Helvetica Neue, Helvetica, Arial, sans-serif;
     margin-top: 0;
-    font-weight: bold;
     horiz-align: center;
 }
 
@@ -34,6 +40,24 @@ label + input {
     margin: 0 30% 0 2%;
 }
 
-div {
+.input-div {
     margin-bottom: 5px;
+}
+
+.button-colors {
+    background-color: #545172;
+    color: #fff
+}
+
+
+.button-style {
+    -webkit-box-sizing: border-box;
+    -webkit-transition: all .35s cubic-bezier(.25, .25, .315, 1.35);
+    -webkit-transition-property: background-color;
+    border-width: 0;
+    font-size: 15px;
+    line-height: 45px;
+    overflow: hidden;
+    transition: all .35s cubic-bezier(.25, .25, .315, 1.35);
+    transition-property: background-color;
 }

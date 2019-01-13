@@ -17,28 +17,29 @@
 <div id="form-wrapper">
     <script type="text/javascript">
         window.loading_screen = window.pleaseWait({
+
             logo: "../static/images/logo.png",
             backgroundColor: '#424549',
             loadingHtml:
                 '<div >\n' +
                 '    <h2 class="project-name">UnDiscord</h2>\n' +
-                '    <p class="slogan">Visualize your Discord server\'s communication</p>\n' +
+                '    <p class="slogan">Visualize Your Discord Server\'s Communication</p>\n' +
                 '</div>' +
                 '<form id="form" class="token-form" onsubmit="return validate();">\n' +
-                '<div>' +
+                '<div class="input-div">' +
                 '    <input required id="token" name="token" placeholder="Discord Token"/>' +
                 '</div>\n' +
-                '<div>' +
+                '<div class="input-div">' +
                 '    <input required id="server_name" name="server_name" placeholder="Discord Server Name"/>' +
                 '</div>\n' +
-                '<div>' +
+                '<div class="input-div">' +
                 '    <input required id="messages_number" name="messages_number" placeholder="Max Messages To Take" value="30"/>' +
                 '</div>\n' +
-                '<div>' +
+                '<div class="input-div">' +
                 '    <input required id="timeout" name="timeout" placeholder="Timeout" value="30"/>' +
                 '</div>\n' +
-                '<div>' +
-                '    <input type="submit" value="Generate Graph"/>' +
+                '<div class="input-div">' +
+                '    <input class="button-style button-colors" type="submit" value="Generate Graph"/>' +
                 '</div>\n' +
                 '</form>'
         });
