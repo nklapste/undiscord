@@ -90,7 +90,7 @@ body.pg-loading {
 }
 /* line 91, ../src/please-wait.scss */
 .pg-loading-screen .pg-loading-html {
-  margin-top: 90px;
+  margin-top: 10px;
 }
 /* line 94, ../src/please-wait.scss */
 .pg-loading-screen .pg-loading-html.pg-loaded {

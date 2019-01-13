@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <title>UnDiscord</title>
@@ -7,57 +7,74 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <link href="../static/css/main.css" rel="stylesheet">
-    <link href="../static/css/please-wait.css" rel="stylesheet">
-    <link href="../static/css/spinner.css" rel="stylesheet">
+    <link href="../static/css/main.css" rel="stylesheet" type="text/css">
+    <link href="../static/css/please-wait.css" rel="stylesheet" type="text/css">
+    <link href="../static/css/spinner.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <script type="text/javascript" src="../static/js/please-wait.js"></script>
-<script type="text/javascript">
-    window.loading_screen = window.pleaseWait({
-        logo: "../static/images/logo.png",
-        backgroundColor: '#424549',
-        loadingHtml:
-            '<form id="form" class="token-form" onsubmit="return validate();">\n' +
-            '    <input id="token" name="token" placeholder="Your Discord Token"/>\n' +
-            '    <input id="server_name" name="server_name" placeholder="Your Discord Server Name"/>\n' +
-            '    <input id="messages_number" name="messages_number" value="30"/>\n' +
-            '    <input id="timeout" name="timeout" value="30"/>\n' +
-            '    <input type="submit" value="Generate Graph"/>\n' +
-            '</form>'
-    });
 
-    function getConnectionGraphHTML() {
-        var xhr = new XMLHttpRequest();
-        var url = "/api/graph";
-        var data = "token=" + document.getElementById("token").value +
-            "&server_name=" + document.getElementById("server_name").value +
-            "&messages_number=" + document.getElementById("messages_number").value +
-            "&timeout=" + document.getElementById("timeout").value;
-        xhr.open("POST", url, true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 201) {
-                window.loading_screen.finish();
-                const jsonResponse = JSON.parse(xhr.responseText);
-                setTimeout(document.location=jsonResponse.graphURL, 4000);
-            }
-        };
-        xhr.send(data);
-    }
+<div id="form-wrapper">
+    <script type="text/javascript">
+        window.loading_screen = window.pleaseWait({
+            logo: "../static/images/logo.png",
+            backgroundColor: '#424549',
+            loadingHtml:
+                '<div >\n' +
+                '    <h2 class="project-name">UnDiscord</h2>\n' +
+                '    <p class="slogan">Visualize your Discord server\'s communication</p>\n' +
+                '</div>' +
+                '<form id="form" class="token-form" onsubmit="return validate();">\n' +
+                '<div>' +
+                '    <input required id="token" name="token" placeholder="Discord Token"/>' +
+                '</div>\n' +
+                '<div>' +
+                '    <input required id="server_name" name="server_name" placeholder="Discord Server Name"/>' +
+                '</div>\n' +
+                '<div>' +
+                '    <input required id="messages_number" name="messages_number" placeholder="Max Messages To Take" value="30"/>' +
+                '</div>\n' +
+                '<div>' +
+                '    <input required id="timeout" name="timeout" placeholder="Timeout" value="30"/>' +
+                '</div>\n' +
+                '<div>' +
+                '    <input type="submit" value="Generate Graph"/>' +
+                '</div>\n' +
+                '</form>'
+        });
 
-    function validate() {
-        window.loading_screen.updateLoadingHtml(
-            '<div class="spinner">\n' +
-            '    <div class="rect1"></div>\n' +
-            '    <div class="rect2"></div>\n' +
-            '    <div class="rect3"></div>\n' +
-            '    <div class="rect4"></div>\n' +
-            '    <div class="rect5"></div>\n' +
-            '</div>');
-        getConnectionGraphHTML();
-        return false;
-    }
-</script>
+        function getConnectionGraphHTML() {
+            var xhr = new XMLHttpRequest();
+            var url = "/api/graph";
+            var data = "token=" + document.getElementById("token").value +
+                "&server_name=" + document.getElementById("server_name").value +
+                "&messages_number=" + document.getElementById("messages_number").value +
+                "&timeout=" + document.getElementById("timeout").value;
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 201) {
+                    window.loading_screen.finish();
+                    const jsonResponse = JSON.parse(xhr.responseText);
+                    setTimeout(document.location = jsonResponse.graphURL, 4000);
+                }
+            };
+            xhr.send(data);
+        }
+
+        function validate() {
+            window.loading_screen.updateLoadingHtml(
+                '<div class="spinner">\n' +
+                '    <div class="rect1"></div>\n' +
+                '    <div class="rect2"></div>\n' +
+                '    <div class="rect3"></div>\n' +
+                '    <div class="rect4"></div>\n' +
+                '    <div class="rect5"></div>\n' +
+                '</div>');
+            getConnectionGraphHTML();
+            return false;
+        }
+    </script>
+</div>
 </body>
 </html>

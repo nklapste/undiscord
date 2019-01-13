@@ -1,3 +1,39 @@
-.token-form {
+.project-name {
+    color: #FFFFFF;
+    font-weight: bold;
+    font-size: 16ex;
+    horiz-align: center;
+    margin-bottom: 0;
+    margin-top: 0;
+}
 
+.slogan {
+    color: #FFFFFF;
+    margin-top: 0;
+    font-weight: bold;
+    horiz-align: center;
+}
+
+.token-form {
+    width: 80%;
+    margin: 0 auto;
+}
+
+label, input {
+    display: inline-block;
+}
+
+label {
+    width: 30%;
+    text-align: right;
+    color: #FFFFFF;
+}
+
+label + input {
+    width: 30%;
+    margin: 0 30% 0 2%;
+}
+
+div {
+    margin-bottom: 5px;
 }
