@@ -1,0 +1,86 @@
+stages:
+  - install
+  - test
+  - build
+  - deploy
+
+
+before_script:
+  - python3.6 -m venv .venv
+  - source .venv/bin/activate
+  - pip install setuptools --upgrade -q
+
+
+# install the python package
+install:
+  tags:
+    - python3
+  stage: install
+  script:
+    - pip install .
+
+
+# run pytest over the code
+pytest:
+  tags:
+    - python3
+  stage: test
+  script:
+    - pip install . -q
+    - python setup.py test || if [ $? -eq 1 -o $? -eq 5 ]; then exit 0 ;  fi;
+  coverage: '/^TOTAL.*\s+(\d+\%)$/'
+
+
+# run pylint over the code
+pylint:
+  tags:
+    - python3
+  stage: test
+  script:
+    - pip install . -q
+    - python setup.py lint || exit $(($? & 35))
+
+
+# build the python package
+build:
+  tags:
+    - python3
+  stage: build
+  script:
+    - pip install . -q
+    - python setup.py sdist
+
+
+# deploy to the staging environment
+deploy staging:
+  tags:
+    - python3
+  stage: deploy
+  environment:
+    name: staging
+  script:
+    - PROJECT_ENVIRONMENT_DIR="$STAGING_ENVIRONMENT/$CI_PROJECT_NAME"
+    - mkdir -p -v "$PROJECT_ENVIRONMENT_DIR"
+    - mkdir -p -v "$PROJECT_ENVIRONMENT_DIR/config"
+    - mkdir -p -v "$PROJECT_ENVIRONMENT_DIR/logs"
+    - python3 -m venv  "$PROJECT_ENVIRONMENT_DIR/.venv"
+    - source "$PROJECT_ENVIRONMENT_DIR/.venv/bin/activate"
+    - pip install . -q
+
+
+# deploy to the production environment
+deploy production:
+  tags:
+    - python3
+  stage: deploy
+  environment:
+    name: production
+  script:
+    - PROJECT_ENVIRONMENT_DIR="$PRODUCTION_ENVIRONMENT/$CI_PROJECT_NAME"
+    - mkdir -p -v "$PROJECT_ENVIRONMENT_DIR"
+    - mkdir -p -v "$PROJECT_ENVIRONMENT_DIR/config"
+    - mkdir -p -v "$PROJECT_ENVIRONMENT_DIR/logs"
+    - python3 -m venv  "$PROJECT_ENVIRONMENT_DIR/.venv"
+    - source "$PROJECT_ENVIRONMENT_DIR/.venv/bin/activate"
+    - pip install . -q
+  when: manual
