@@ -31,6 +31,19 @@ def index():
 def graph(graph_uuid):
     return send_from_directory(GRAPH_DIR, '{}.html'.format(graph_uuid))
 
+# TODO: make so that it can be enabled/disabled
+# monkey patch courtesy of
+# https://github.com/noirbizarre/flask-restplus/issues/54
+# so that /swagger.json is served over https
+from flask import url_for
+
+
+@property
+def specs_url(self):
+    """Monkey patch for HTTPS"""
+    return url_for(self.endpoint('specs'), _external=True, _scheme='https')
+Api.specs_url = specs_url
+
 
 API = Api(
     APP,
