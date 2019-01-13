@@ -10,7 +10,7 @@ undiscord
     :target: https://codecov.io/gh/nklapste/undiscord
     :alt: Coverage Status
 
-A Discord bot and server for the 2019 Hackathon.
+A Discord bot and server for the 2019 Level Up Hackathon.
 
 Overview
 ========
