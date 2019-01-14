@@ -12,6 +12,7 @@ from discord import Client, Server, Channel, Message, Member, Forbidden, \
     NotFound, HTTPException
 
 from undiscord.common import add_log_parser, init_logging
+from undiscord.friend_map import FriendMap, PlotlyAdapter
 
 __log__ = getLogger(__name__)
 
@@ -26,22 +27,26 @@ def get_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
-    parser.add_argument("-s", "--server-name", type=str, required=True,
-                        dest="server_name",
+    parser.add_argument("-o", "--output-file", dest="output_file",
+                        required=True,
+                        help="Path to output the Discord server member "
+                             "network graph")
+    parser.add_argument("-tf", "--token-file", dest="token_file",
+                        required=True,
+                        help="Path to file containing the Discord token for "
+                             "the bot")
+    parser.add_argument("-s", "--server-name", dest="server_name",
+                        required=True,
                         help="Name of the Discord server to collect "
                              "messages from")
     parser.add_argument("-n", "--message-number", type=int,
-                        default=DEFAULT_MESSAGES_NUMBER,
                         dest="message_number",
+                        default=DEFAULT_MESSAGES_NUMBER,
                         help="Number of Discord messages to collect")
     parser.add_argument("-t", "--timeout", type=float,
                         default=DEFAULT_TIMEOUT,
                         help="Time to collect Discord messages before "
                              "stopping")
-    parser.add_argument("-tf", "--token-file", type=str, dest="token_file",
-                        required=True,
-                        help="Path to file containing the Discord token for "
-                             "the bot")
 
     add_log_parser(parser)
 
@@ -56,7 +61,16 @@ def main(argv=sys.argv[1:]) -> int:
     init_logging(args, "undiscord_bot.log")
     with open(args.token_file, "r") as f:
         token = f.read().strip()
-    scrape_server(token, args.server_name, args.message_number, args.timeout)
+    server_data = scrape_server(
+        token=token,
+        server_name=args.server_name,
+        messages_number=args.message_number,
+        timeout=args.timeout
+    )
+    friend_map = FriendMap(server_data)
+    html_graph = PlotlyAdapter(friend_map, "reingold")
+    html_graph.plot_graph(args.output_file)
+
     return 0
 
 
@@ -122,17 +136,14 @@ def scrape_server(token: str,
                             ]
                         }
                         channel_data["messages"].append(message_data)
-                        __log__.debug(
-                            "parsed message: {}".format(message_data))
                 except Forbidden:  # cant access channel
                     pass
                 except NotFound:  # cant find channel
                     pass
                 except HTTPException:  # discord likely down
                     pass
-                __log__.debug("parsed channel: {}".format(channel_data))
                 server_data["channels"].append(channel_data)
-            __log__.debug("parsed server: {}".format(server_data))
+        client.close()
 
     loop.run_until_complete(client.login(token, bot=False))
     try:
