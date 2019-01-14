@@ -10,6 +10,7 @@ from logging import getLogger
 
 from discord import Client, Server, Channel, Message, Member, Forbidden, \
     NotFound, HTTPException
+from pony.orm import Database, Required, db_session, Set, Optional, PrimaryKey
 
 from undiscord.common import add_log_parser, init_logging
 from undiscord.friend_map import FriendMap, PlotlyAdapter
@@ -18,6 +19,35 @@ __log__ = getLogger(__name__)
 
 DEFAULT_MESSAGES_NUMBER: int = 30
 DEFAULT_TIMEOUT: float = 30.0
+
+db = Database()
+
+
+class Member(db.Entity):
+    id = PrimaryKey(str)
+    name = Required(str)
+
+
+class Server(db.Entity):
+    id = PrimaryKey(str)
+    name = Required(str)
+
+
+class Channel(db.Entity):
+    server = Required(Server)
+    id = PrimaryKey(str)
+    name = Required(str)
+
+
+class Message(db.Entity):
+    author = Required(Member)
+    content = Optional(str)
+    timestamp = Required(str)
+    channel = Optional(Channel)
+
+
+db.bind(provider='sqlite', filename='database.sqlite', create_db=True)
+db.generate_mapping(create_tables=True)
 
 
 def get_parser() -> argparse.ArgumentParser:
@@ -61,12 +91,14 @@ def main(argv=sys.argv[1:]) -> int:
     init_logging(args, "undiscord_bot.log")
     with open(args.token_file, "r") as f:
         token = f.read().strip()
+
     server_data = scrape_server(
         token=token,
         server_name=args.server_name,
         messages_number=args.message_number,
         timeout=args.timeout
     )
+
     friend_map = FriendMap(server_data)
     html_graph = PlotlyAdapter(friend_map, "reingold")
     html_graph.plot_graph(args.output_file)
@@ -74,6 +106,7 @@ def main(argv=sys.argv[1:]) -> int:
     return 0
 
 
+@db_session
 def scrape_server(token: str,
                   server_name: str,
                   messages_number: int = DEFAULT_MESSAGES_NUMBER,
@@ -99,6 +132,7 @@ def scrape_server(token: str,
                     "channels": []
                 }
             )
+            ser = Server(name=server.name, id=server.id)
 
             for channel in server.channels:
                 channel: Channel = channel
@@ -109,7 +143,7 @@ def scrape_server(token: str,
                     "id": channel.id,
                     "messages": []
                 }
-
+                chan = Channel(name=channel.name, id=channel.id, server=ser)
                 try:
                     async for message in client.logs_from(channel,
                                                           limit=messages_number):
@@ -135,6 +169,18 @@ def scrape_server(token: str,
                                 for mentioned_member in message.mentions
                             ]
                         }
+                        mem = Member.get(id=author.id)
+                        if mem is None:
+                            mem = Member(
+                                id=author.id,
+                                name=author.name,
+                            )
+                        Message(
+                            author=mem,
+                            content=message.content,
+                            timestamp=str(message.timestamp),
+                            channel=chan,
+                        )
                         channel_data["messages"].append(message_data)
                 except Forbidden:  # cant access channel
                     pass

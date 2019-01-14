@@ -77,6 +77,7 @@ setup(
     include_package_data=True,
     install_requires=[
         "discord.py",
+        "pony",
         "plotly>=3.5.0,<4.0.0",
         "pendulum>=2.0.4,<3.0.0",
         "flask-restplus>=0.12.1,<1.0.0",
