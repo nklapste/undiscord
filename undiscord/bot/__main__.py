@@ -26,7 +26,8 @@ db = Database()
 class Member(db.Entity):
     id = PrimaryKey(str)
     name = Required(str)
-    messages = Set("Message")
+    messages = Set("Message", reverse="author")
+    mentions = Set("Message", reverse="mentions")
 
 
 class Server(db.Entity):
@@ -47,6 +48,7 @@ class Message(db.Entity):
     content = Optional(str)
     timestamp = Required(str)
     channel = Optional(Channel)
+    mentions = Set("Member", reverse="mentions")
 
 
 db.bind(provider='sqlite', filename='database.sqlite', create_db=True)
@@ -146,7 +148,7 @@ def scrape_server(token: str,
                     "id": channel.id,
                     "messages": []
                 }
-                chan = Channel(name=channel.name, id=channel.id, server=ser)
+                chan = ser.channels.create(name=channel.name, id=channel.id)
                 try:
                     async for message in client.logs_from(channel,
                                                           limit=messages_number):
@@ -178,12 +180,19 @@ def scrape_server(token: str,
                                 id=author.id,
                                 name=author.name,
                             )
-                        Message(
+                        mes = chan.messages.create(
                             author=mem,
                             content=message.content,
                             timestamp=str(message.timestamp),
-                            channel=chan,
                         )
+                        for mentioned_member in message.mentions:
+                            mem = Member.get(id=mentioned_member.id)
+                            if mem is None:
+                                mem = Member(
+                                    id=mentioned_member.id,
+                                    name=mentioned_member.name,
+                                )
+                            mes.mentions.add(mem)
                         channel_data["messages"].append(message_data)
                 except Forbidden:  # cant access channel
                     pass
