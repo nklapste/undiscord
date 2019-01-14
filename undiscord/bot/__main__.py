@@ -26,17 +26,20 @@ db = Database()
 class Member(db.Entity):
     id = PrimaryKey(str)
     name = Required(str)
+    messages = Set("Message")
 
 
 class Server(db.Entity):
     id = PrimaryKey(str)
     name = Required(str)
+    channels = Set("Channel")
 
 
 class Channel(db.Entity):
-    server = Required(Server)
     id = PrimaryKey(str)
     name = Required(str)
+    server = Required(Server)
+    messages = Set("Message")
 
 
 class Message(db.Entity):
